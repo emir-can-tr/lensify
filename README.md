@@ -1,69 +1,130 @@
-# Lensify - Instant Photo Effects
+# 🎨 Lensify - Instant Photo Effects
 
-A web application that allows users to apply high-quality, artistic camera effects to their photos with batch processing support.
+**Transform Your Photos Instantly with Professional-Grade Effects**
 
-## Features
+A powerful, user-friendly photo processing application that brings professional analog camera effects to your digital photos. With 14 premium effects including vintage film stocks, cross-processing, and light leaks, you can batch process multiple photos and download them instantly.
 
-- Upload multiple photos at once
-- Apply effects to individual photos or entire batches
-- Real-time preview of effects
-- Download processed images as individual files or ZIP archive
-- 8 predefined effects: Vintage, Black & White, Cinematic, Lomo, Warm, Cool, Sharp, Soft
+![Lensify](https://img.shields.io/badge/Status-Ready-brightgreen) ![Python](https://img.shields.io/badge/Python-3.8+-blue) ![Node.js](https://img.shields.io/badge/Node.js-18+-green) ![React](https://img.shields.io/badge/React-19+-cyan)
 
-## Tech Stack
+## ✨ Features
 
-### Frontend
-- React + TypeScript
-- Redux Toolkit for state management
-- Tailwind CSS for styling
-- Vite for build tooling
+- 🎬 **14 Premium Effects**: Including Vintage, Cinematic, Analog Film stocks (Kodak, Fuji, Polaroid), and more
+- 🚀 **Batch Processing**: Apply effects to multiple photos simultaneously
+- ⚡ **Real-time Preview**: See effects applied instantly before processing
+- 📦 **ZIP Download**: Automatically packages multiple processed images
+- 🎨 **Authentic Film Effects**: Realistic grain, color grading, and artifacts
+- 💫 **Professional Quality**: High-resolution output with customizable settings
+- 🌐 **Cross-Platform**: Works on Windows, macOS, and Linux
 
-### Backend
-- FastAPI (Python)
-- Pillow for image processing
-- NumPy for advanced effects
+💼 **Available Effects**
 
-## Getting Started
+| Effect | Description | Style |
+|--------|-------------|--------|
+| **Vintage** | Warm sepia tone with reduced saturation | Classic |
+| **Black & White** | Professional monochrome conversion | Timeless |
+| **Cinematic** | High contrast with moody tones | Dramatic |
+| **Lomo** | Saturated colors with dark vignette | Retro |
+| **Warm** | Enhanced reds for cozy feeling | Cozy |
+| **Cool** | Enhanced blues for crisp look | Fresh |
+| **Sharp** | Enhanced edge definition | Professional |
+| **Soft** | Gentle blur for dreamy effect | Dreamy |
+| **Kodak Film** | Classic warm film stock with grain | Authentic |
+| **Fuji Film** | Cool tones with enhanced greens | Natural |
+| **Polaroid** | Instant film with warm cast | Nostalgic |
+| **Expired Film** | Degraded film with color shifts | Artistic |
+| **Cross Process** | Inverted color processing effect | Experimental |
+| **Light Leak** | Film exposure with orange glow | Atmospheric |
 
-### Prerequisites
-- Node.js (v16 or higher)
-- Python (v3.8 or higher)
+## 🚀 Quick Start
 
-### Installation
+### Option 1: Automated Setup (Recommended)
 
-1. Clone the repository
+#### Windows
 ```bash
-git clone <repository-url>
-cd lensify
+# Download and run the setup script
+.\setup-windows.bat
+# Or use PowerShell
+.\setup-windows.ps1
+
+# Start the application
+.\start-windows.bat
 ```
 
-2. Install frontend dependencies
+#### macOS / Linux
 ```bash
-cd frontend
-npm install
+# Make scripts executable
+chmod +x setup-unix.sh start-unix.sh
+
+# Run setup
+./setup-unix.sh
+
+# Start the application
+./start-unix.sh
 ```
 
-3. Install backend dependencies
-```bash
-cd ../backend
-pip install -r requirements.txt
-```
+### Option 2: Manual Setup
 
-### Running the Application
+#### Prerequisites
+- **Python 3.8+** - [Download here](https://python.org)
+- **Node.js 18+** - [Download here](https://nodejs.org)
+- **Git** - [Download here](https://git-scm.com)
 
-1. Start the backend server
-```bash
-cd backend
-python main.py
-```
+#### Installation Steps
 
-2. Start the frontend development server
-```bash
-cd frontend
-npm run dev
-```
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd lensify
+   ```
 
-3. Open http://localhost:5173 in your browser
+2. **Set up the backend**
+   ```bash
+   cd backend
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   source venv/bin/activate
+   
+   pip install -r requirements.txt
+   ```
+
+3. **Set up the frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+4. **Configure environment**
+   ```bash
+   # Create frontend environment file
+   cp .env.example .env
+   ```
+
+5. **Start the application**
+   
+   **Backend (Terminal 1):**
+   ```bash
+   cd backend
+   # Windows
+   venv\Scripts\activate
+   # macOS/Linux  
+   source venv/bin/activate
+   
+   python main.py
+   ```
+   
+   **Frontend (Terminal 2):**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+6. **Open the application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
 
 ## Project Structure
 
