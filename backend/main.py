@@ -7,13 +7,16 @@ import zipfile
 from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 import uvicorn
+import os
 
 app = FastAPI(title="Lensify API", version="1.0.0")
 
-# Configure CORS
+# Configure CORS - Get allowed origins from environment
+allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],  # Vite ports
+    allow_origins=[origin.strip() for origin in allowed_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -360,6 +363,10 @@ EFFECTS = {
 async def root():
     return {"message": "Lensify API is running!"}
 
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "service": "Lensify API"}
+
 @app.get("/effects")
 async def get_effects():
     """Get list of available effects"""
@@ -433,4 +440,5 @@ async def apply_effect(
     )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
