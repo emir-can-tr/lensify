@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from typing import List
@@ -124,6 +124,219 @@ class ImageEffects:
     def soft(image: Image.Image) -> Image.Image:
         """Apply soft/blur filter"""
         return image.filter(ImageFilter.BLUR)
+    
+    @staticmethod
+    def analog_kodak(image: Image.Image) -> Image.Image:
+        """Apply Kodak film analog effect"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        
+        # Kodak color grading - warmer tones, enhanced contrast
+        # Boost reds and oranges, slightly desaturate blues
+        pixels[:, :, 0] = np.clip(pixels[:, :, 0] * 1.15 + 10, 0, 255)  # Red boost
+        pixels[:, :, 1] = np.clip(pixels[:, :, 1] * 1.05 + 5, 0, 255)   # Slight green boost
+        pixels[:, :, 2] = np.clip(pixels[:, :, 2] * 0.92 - 5, 0, 255)   # Blue reduction
+        
+        # Add film grain
+        height, width = pixels.shape[:2]
+        grain = np.random.normal(0, 8, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        # Slight contrast boost
+        pixels = np.clip((pixels - 128) * 1.1 + 128, 0, 255)
+        
+        return Image.fromarray(pixels.astype(np.uint8))
+    
+    @staticmethod
+    def analog_fuji(image: Image.Image) -> Image.Image:
+        """Apply Fuji film analog effect"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        
+        # Fuji color grading - cooler tones, enhanced greens
+        pixels[:, :, 0] = np.clip(pixels[:, :, 0] * 0.95, 0, 255)      # Slight red reduction
+        pixels[:, :, 1] = np.clip(pixels[:, :, 1] * 1.12 + 8, 0, 255)  # Green boost
+        pixels[:, :, 2] = np.clip(pixels[:, :, 2] * 1.08 + 5, 0, 255)  # Blue boost
+        
+        # Add fine film grain
+        height, width = pixels.shape[:2]
+        grain = np.random.normal(0, 6, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        # Subtle saturation boost
+        img_temp = Image.fromarray(pixels.astype(np.uint8))
+        enhancer = ImageEnhance.Color(img_temp)
+        img_temp = enhancer.enhance(1.15)
+        
+        return img_temp
+    
+    @staticmethod
+    def analog_polaroid(image: Image.Image) -> Image.Image:
+        """Apply Polaroid instant film effect"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        height, width = pixels.shape[:2]
+        
+        # Polaroid characteristic warm color cast
+        pixels[:, :, 0] = np.clip(pixels[:, :, 0] * 1.08 + 12, 0, 255)  # Warm red
+        pixels[:, :, 1] = np.clip(pixels[:, :, 1] * 1.03 + 8, 0, 255)   # Slight yellow
+        pixels[:, :, 2] = np.clip(pixels[:, :, 2] * 0.88 - 8, 0, 255)   # Reduced blue
+        
+        # Add characteristic Polaroid border fade
+        Y, X = np.ogrid[:height, :width]
+        center_x, center_y = width // 2, height // 2
+        
+        # Create border fade effect
+        border_fade = np.minimum(
+            np.minimum(X, width - X),
+            np.minimum(Y, height - Y)
+        )
+        border_fade = border_fade.astype(float) / min(width, height) * 4
+        border_fade = np.clip(border_fade, 0.7, 1.0)
+        
+        for i in range(3):
+            pixels[:, :, i] = pixels[:, :, i] * border_fade
+        
+        # Add coarse grain for instant film texture
+        grain = np.random.normal(0, 12, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        # Slight overexposure effect
+        pixels = np.clip(pixels * 1.05 + 10, 0, 255)
+        
+        return Image.fromarray(pixels.astype(np.uint8))
+    
+    @staticmethod
+    def analog_expired(image: Image.Image) -> Image.Image:
+        """Apply expired film effect with color shifts and artifacts"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        height, width = pixels.shape[:2]
+        
+        # Expired film color shifts - magenta/green cast
+        pixels[:, :, 0] = np.clip(pixels[:, :, 0] * 1.12 + 15, 0, 255)  # Red/magenta boost
+        pixels[:, :, 1] = np.clip(pixels[:, :, 1] * 0.92 - 10, 0, 255)  # Green reduction
+        pixels[:, :, 2] = np.clip(pixels[:, :, 2] * 1.05 + 5, 0, 255)   # Slight blue boost
+        
+        # Add random light leaks
+        leak_intensity = np.random.uniform(20, 40)
+        leak_x = np.random.randint(0, width)
+        leak_y = np.random.randint(0, height)
+        leak_radius = min(width, height) // 4
+        
+        Y, X = np.ogrid[:height, :width]
+        leak_mask = (X - leak_x)**2 + (Y - leak_y)**2 <= leak_radius**2
+        
+        # Apply light leak
+        pixels[leak_mask, 0] = np.clip(pixels[leak_mask, 0] + leak_intensity, 0, 255)
+        pixels[leak_mask, 1] = np.clip(pixels[leak_mask, 1] + leak_intensity * 0.7, 0, 255)
+        
+        # Heavy grain and scratches
+        grain = np.random.normal(0, 15, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        # Random vertical scratches
+        for _ in range(np.random.randint(2, 6)):
+            scratch_x = np.random.randint(0, width)
+            scratch_width = np.random.randint(1, 3)
+            scratch_intensity = np.random.uniform(30, 60)
+            
+            end_x = min(scratch_x + scratch_width, width)
+            pixels[:, scratch_x:end_x, :] = np.clip(
+                pixels[:, scratch_x:end_x, :] + scratch_intensity, 0, 255
+            )
+        
+        return Image.fromarray(pixels.astype(np.uint8))
+    
+    @staticmethod
+    def analog_cross_process(image: Image.Image) -> Image.Image:
+        """Apply cross-processing effect (developing slide film in print chemicals)"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        
+        # Cross-processing color inversion characteristics
+        # Boost contrast in highlights, compress shadows
+        pixels = pixels / 255.0  # Normalize to 0-1
+        
+        # Apply characteristic S-curve to each channel differently
+        # Red channel - boost highlights
+        pixels[:, :, 0] = np.power(pixels[:, :, 0], 0.8)
+        pixels[:, :, 0] = np.clip(pixels[:, :, 0] * 1.3, 0, 1)
+        
+        # Green channel - compress midtones
+        pixels[:, :, 1] = np.power(pixels[:, :, 1], 1.4)
+        pixels[:, :, 1] = np.clip(pixels[:, :, 1] * 0.9 + 0.1, 0, 1)
+        
+        # Blue channel - boost shadows
+        pixels[:, :, 2] = np.power(pixels[:, :, 2], 1.1)
+        pixels[:, :, 2] = np.clip(pixels[:, :, 2] * 1.1 + 0.05, 0, 1)
+        
+        pixels = pixels * 255.0  # Back to 0-255
+        
+        # Add slight grain
+        height, width = pixels.shape[:2]
+        grain = np.random.normal(0, 5, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        return Image.fromarray(pixels.astype(np.uint8))
+    
+    @staticmethod
+    def analog_light_leak(image: Image.Image) -> Image.Image:
+        """Apply light leak effect with orange/red casting"""
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        
+        pixels = np.array(image).astype(float)
+        height, width = pixels.shape[:2]
+        
+        # Create multiple light leaks
+        for _ in range(np.random.randint(1, 3)):
+            leak_intensity = np.random.uniform(40, 80)
+            
+            # Random corner or edge placement
+            corner = np.random.choice(['top-left', 'top-right', 'bottom-left', 'bottom-right', 'edge'])
+            
+            if corner == 'top-left':
+                leak_center = (height // 4, width // 4)
+            elif corner == 'top-right':
+                leak_center = (height // 4, 3 * width // 4)
+            elif corner == 'bottom-left':
+                leak_center = (3 * height // 4, width // 4)
+            elif corner == 'bottom-right':
+                leak_center = (3 * height // 4, 3 * width // 4)
+            else:  # edge
+                if np.random.random() > 0.5:  # vertical edge
+                    leak_center = (np.random.randint(0, height), 0 if np.random.random() > 0.5 else width-1)
+                else:  # horizontal edge
+                    leak_center = (0 if np.random.random() > 0.5 else height-1, np.random.randint(0, width))
+            
+            # Create gradient for light leak
+            Y, X = np.ogrid[:height, :width]
+            distance = np.sqrt((Y - leak_center[0])**2 + (X - leak_center[1])**2)
+            max_distance = np.sqrt(height**2 + width**2) / 3
+            
+            leak_mask = np.exp(-distance / max_distance) * leak_intensity
+            
+            # Apply warm light leak (orange/red)
+            pixels[:, :, 0] = np.clip(pixels[:, :, 0] + leak_mask, 0, 255)
+            pixels[:, :, 1] = np.clip(pixels[:, :, 1] + leak_mask * 0.6, 0, 255)
+            pixels[:, :, 2] = np.clip(pixels[:, :, 2] + leak_mask * 0.2, 0, 255)
+        
+        # Add subtle grain
+        grain = np.random.normal(0, 4, (height, width, 3))
+        pixels = np.clip(pixels + grain, 0, 255)
+        
+        return Image.fromarray(pixels.astype(np.uint8))
 
 # Available effects
 EFFECTS = {
@@ -135,6 +348,12 @@ EFFECTS = {
     "cool": ImageEffects.cool,
     "sharp": ImageEffects.sharp,
     "soft": ImageEffects.soft,
+    "analog_kodak": ImageEffects.analog_kodak,
+    "analog_fuji": ImageEffects.analog_fuji,
+    "analog_polaroid": ImageEffects.analog_polaroid,
+    "analog_expired": ImageEffects.analog_expired,
+    "analog_cross_process": ImageEffects.analog_cross_process,
+    "analog_light_leak": ImageEffects.analog_light_leak,
 }
 
 @app.get("/")
@@ -148,7 +367,7 @@ async def get_effects():
 
 @app.post("/apply-effect")
 async def apply_effect(
-    effect: str,
+    effect: str = Form(...),
     files: List[UploadFile] = File(...)
 ):
     """Apply effect to uploaded images"""
