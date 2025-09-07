@@ -35,7 +35,7 @@ const BatchProcessor: React.FC = () => {
         formData.append('files', fileData.file)
       })
 
-      const response = await fetch('http://localhost:8000/apply-effect', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/apply-effect`, {
         method: 'POST',
         body: formData,
       })
@@ -88,7 +88,7 @@ const BatchProcessor: React.FC = () => {
       formData.append('effect', selectedEffect)
       formData.append('files', files[0].file)
 
-      const response = await fetch('http://localhost:8000/apply-effect', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/apply-effect`, {
         method: 'POST',
         body: formData,
       })

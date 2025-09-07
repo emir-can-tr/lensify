@@ -125,7 +125,7 @@ const EffectGallery: React.FC = () => {
       formData.append('effect', effectId)
       formData.append('files', activeFile.file)
 
-      const response = await fetch('http://localhost:8000/apply-effect', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/apply-effect`, {
         method: 'POST',
         body: formData,
       })
