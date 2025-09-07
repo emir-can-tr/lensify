@@ -12,7 +12,10 @@ import os
 app = FastAPI(title="Lensify API", version="1.0.0")
 
 # Configure CORS - Get allowed origins from environment
-allowed_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost:5174").split(",")
+allowed_origins = os.getenv(
+    "CORS_ORIGINS", 
+    "http://localhost:5173,http://localhost:5174,https://lensify-uq6i.onrender.com"
+).split(",")
 
 app.add_middleware(
     CORSMiddleware,
