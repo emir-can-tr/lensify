@@ -1,21 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import JSZip from 'jszip'
+import { RootState } from '../store/store'
 
-interface RootState {
-  photos: {
-    files: Array<{
-      file: File
-      preview: string
-      name: string
-      size: number
-    }>
-    selectedEffect: string | null
-    isProcessing: boolean
-  }
-}
-
-const BatchProcessor: React.FC = () => {
+const BatchProcessor = () => {
   const { files, selectedEffect } = useSelector((state: RootState) => state.photos)
   const [isProcessing, setIsProcessing] = useState(false)
   const [processedCount, setProcessedCount] = useState(0)

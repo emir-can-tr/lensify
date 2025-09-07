@@ -1,12 +1,12 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { uploadPhotos } from '../store/photoSlice.js'
+import { uploadPhotos } from '../store/photoSlice'
 
 interface ImageUploaderProps {
   className?: string
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ className = '' }) => {
+const ImageUploader = ({ className = '' }: ImageUploaderProps) => {
   const dispatch = useDispatch()
   const [isDragOver, setIsDragOver] = useState(false)
   const [isUploading, setIsUploading] = useState(false)

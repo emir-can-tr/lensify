@@ -1,20 +1,8 @@
-import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setActivePhoto, clearPhotos } from '../store/photoSlice.js'
+import { setActivePhoto, clearPhotos } from '../store/photoSlice'
+import { RootState } from '../store/store'
 
-interface RootState {
-  photos: {
-    files: Array<{
-      file: File
-      preview: string
-      name: string
-      size: number
-    }>
-    activePhotoIndex: number
-  }
-}
-
-const PhotoBasket: React.FC = () => {
+const PhotoBasket = () => {
   const dispatch = useDispatch()
   const { files, activePhotoIndex } = useSelector((state: RootState) => state.photos)
 

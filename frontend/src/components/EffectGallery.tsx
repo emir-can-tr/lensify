@@ -1,19 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setSelectedEffect, updatePreview } from '../store/photoSlice.js'
-
-interface RootState {
-  photos: {
-    files: Array<{
-      file: File
-      preview: string
-      name: string
-      size: number
-    }>
-    activePhotoIndex: number
-    selectedEffect: string | null
-  }
-}
+import { setSelectedEffect, updatePreview } from '../store/photoSlice'
+import { RootState } from '../store/store'
 
 interface Effect {
   id: string
@@ -167,7 +155,7 @@ const effects: Effect[] = [
   }
 ]
 
-const EffectGallery: React.FC = () => {
+const EffectGallery = () => {
   const dispatch = useDispatch()
   const { files, activePhotoIndex, selectedEffect } = useSelector(
     (state: RootState) => state.photos

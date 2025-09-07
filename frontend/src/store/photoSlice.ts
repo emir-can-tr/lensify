@@ -1,6 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-const initialState = {
+interface PhotoFile {
+  file: File
+  preview: string
+}
+
+interface PhotoState {
+  files: PhotoFile[]
+  activePhotoIndex: number
+  selectedEffect: string | null
+  isProcessing: boolean
+  previewUrl: string | null
+}
+
+const initialState: PhotoState = {
   files: [],
   activePhotoIndex: 0,
   selectedEffect: null,
@@ -12,26 +25,26 @@ const photoSlice = createSlice({
   name: 'photos',
   initialState,
   reducers: {
-    uploadPhotos: (state, action) => {
+    uploadPhotos: (state, action: PayloadAction<PhotoFile[]>) => {
       state.files = action.payload
       state.activePhotoIndex = 0
       if (action.payload.length > 0) {
         state.previewUrl = action.payload[0].preview
       }
     },
-    setActivePhoto: (state, action) => {
+    setActivePhoto: (state, action: PayloadAction<number>) => {
       state.activePhotoIndex = action.payload
       if (state.files[action.payload]) {
         state.previewUrl = state.files[action.payload].preview
       }
     },
-    setSelectedEffect: (state, action) => {
+    setSelectedEffect: (state, action: PayloadAction<string | null>) => {
       state.selectedEffect = action.payload
     },
-    setProcessing: (state, action) => {
+    setProcessing: (state, action: PayloadAction<boolean>) => {
       state.isProcessing = action.payload
     },
-    updatePreview: (state, action) => {
+    updatePreview: (state, action: PayloadAction<string>) => {
       state.previewUrl = action.payload
     },
     clearPhotos: (state) => {

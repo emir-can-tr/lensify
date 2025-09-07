@@ -1,4 +1,3 @@
-import React from 'react'
 import ImageUploader from './components/ImageUploader'
 import PhotoBasket from './components/PhotoBasket'
 import ImagePreview from './components/ImagePreview'
