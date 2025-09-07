@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedEffect, updatePreview } from '../store/photoSlice'
-import { RootState } from '../store/store'
+import type { RootState } from '../store/store'
 
 interface Effect {
   id: string

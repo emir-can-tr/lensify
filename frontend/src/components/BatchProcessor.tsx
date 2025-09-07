@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { RootState } from '../store/store'
+import type { RootState } from '../store/store'
 
 const BatchProcessor = () => {
   const { files, selectedEffect } = useSelector((state: RootState) => state.photos)
@@ -35,7 +35,7 @@ const BatchProcessor = () => {
           const url = window.URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
-          a.download = `processed_${files[0].name}`
+          a.download = `processed_${files[0].file.name}`
           document.body.appendChild(a)
           a.click()
           document.body.removeChild(a)
@@ -85,7 +85,7 @@ const BatchProcessor = () => {
         const url = window.URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = `processed_${files[0].name}`
+        a.download = `processed_${files[0].file.name}`
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)

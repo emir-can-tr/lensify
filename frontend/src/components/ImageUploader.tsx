@@ -26,9 +26,7 @@ const ImageUploader = ({ className = '' }: ImageUploaderProps) => {
 
     const processedFiles = imageFiles.map(file => ({
       file,
-      preview: URL.createObjectURL(file),
-      name: file.name,
-      size: file.size
+      preview: URL.createObjectURL(file)
     }))
 
     dispatch(uploadPhotos(processedFiles))

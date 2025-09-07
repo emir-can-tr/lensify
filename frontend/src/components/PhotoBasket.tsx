@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { setActivePhoto, clearPhotos } from '../store/photoSlice'
-import { RootState } from '../store/store'
+import type { RootState } from '../store/store'
 
 const PhotoBasket = () => {
   const dispatch = useDispatch()
@@ -58,7 +58,7 @@ const PhotoBasket = () => {
               <div className="aspect-square">
                 <img
                   src={fileData.preview}
-                  alt={fileData.name}
+                  alt={fileData.file.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -72,8 +72,8 @@ const PhotoBasket = () => {
             {/* Tooltip on hover */}
             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10">
               <div className="bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                <div className="font-medium">{fileData.name}</div>
-                <div className="text-gray-300">{formatFileSize(fileData.size)}</div>
+                <div className="font-medium">{fileData.file.name}</div>
+                <div className="text-gray-300">{formatFileSize(fileData.file.size)}</div>
               </div>
               <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-black"></div>
             </div>
